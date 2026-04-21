@@ -5,6 +5,7 @@ import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 
 const meta = reactive({
+  title: '报价单',
   customer: '',
   date: formatToday(),
   note: ''
@@ -135,7 +136,8 @@ function nextTickPaint() {
     <van-nav-bar title="报价单生成" />
 
     <van-cell-group inset title="基本信息">
-      <van-field v-model="meta.customer" label="客户名称" placeholder="例如：南山马总" />
+      <van-field v-model="meta.title" label="标题" placeholder="例如：报价单" />
+      <van-field v-model="meta.customer" label="报价单名称" placeholder="例如：南山马总" />
       <van-field v-model="meta.date" label="日期" type="date" placeholder="选择日期" />
       <van-field v-model="meta.note" label="整体备注" rows="2" autosize type="textarea" placeholder="选填" />
     </van-cell-group>
@@ -182,16 +184,16 @@ function nextTickPaint() {
     <!-- 离屏渲染的预览，用于 html2canvas -->
     <div class="preview-wrap">
       <div ref="previewRef" class="preview">
-        <h1 class="pv-title">报价单</h1>
+        <h1 class="pv-title">{{ meta.title || '报价单' }}</h1>
         <div class="pv-meta">
-          <div><span>客户：</span>{{ meta.customer || '—' }}</div>
+          <div><span>名称：</span>{{ meta.customer || '—' }}</div>
           <div><span>日期：</span>{{ meta.date }}</div>
         </div>
         <table class="pv-table">
           <colgroup>
             <col style="width: 44px" />
-            <col style="width: 90px" />
             <col />
+            <col style="width: 90px" />
             <col style="width: 70px" />
             <col style="width: 50px" />
             <col style="width: 50px" />
@@ -201,8 +203,8 @@ function nextTickPaint() {
           <thead>
             <tr>
               <th>序号</th>
-              <th>图片</th>
               <th>产品名称</th>
+              <th>图片</th>
               <th>单价(元)</th>
               <th>单位</th>
               <th>数量</th>
@@ -213,11 +215,11 @@ function nextTickPaint() {
           <tbody>
             <tr v-for="(it, i) in items" :key="it.id">
               <td>{{ i + 1 }}</td>
+              <td>{{ it.name || '—' }}</td>
               <td>
                 <img v-if="it.image" :src="it.image" class="pv-img" />
                 <span v-else class="muted">—</span>
               </td>
-              <td>{{ it.name || '—' }}</td>
               <td>{{ it.price ? Number(it.price).toFixed(2) : '—' }}</td>
               <td>{{ it.unit || '—' }}</td>
               <td>{{ it.qty || '—' }}</td>
@@ -231,7 +233,6 @@ function nextTickPaint() {
           </tbody>
         </table>
         <div v-if="meta.note" class="pv-note"><b>备注：</b>{{ meta.note }}</div>
-        <div class="pv-foot">本报价单由 quotation-h5 生成</div>
       </div>
     </div>
   </div>
@@ -324,11 +325,5 @@ function nextTickPaint() {
   margin-top: 14px;
   font-size: 13px;
   line-height: 1.6;
-}
-.pv-foot {
-  margin-top: 30px;
-  text-align: center;
-  color: #999;
-  font-size: 12px;
 }
 </style>
